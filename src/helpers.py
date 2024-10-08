@@ -1,5 +1,5 @@
 
-from typing import TypeVar
+from typing import Iterable, TypeVar
 
 
 T = TypeVar('T')
@@ -7,3 +7,4 @@ T = TypeVar('T')
 
 def fst(x: tuple[T, int]) -> T:
     return x[0]
+

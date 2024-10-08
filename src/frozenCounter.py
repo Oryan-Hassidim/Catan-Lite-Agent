@@ -1,5 +1,5 @@
 
-from typing import Generic, Iterator, TypeVar
+from typing import Generic, Iterable, Iterator, TypeVar
 
 from helpers import fst
 
@@ -8,12 +8,14 @@ T = TypeVar('T')
 
 
 class frozenCounter(Generic[T]):
-    def __init__(self, elements: dict[T, int]):
+    def __init__(self, elements: dict[T, int] = {}):
         self._data: dict[T, int] = {item: value
                                     for item, value in sorted(elements.items(), key=fst) # type: ignore
                                     if value != 0}
-        if any(value < 0 for value in self._data.values()):
-            raise ValueError("frozenCounter values must be non-negative")
+        self._hash = hash(tuple(self._data.items()))
+
+    def items(self) -> Iterable[tuple[T, int]]:
+        return self._data.items()
 
     def __getitem__(self, key: T) -> int:
         return self._data.get(key, 0)
@@ -37,7 +39,7 @@ class frozenCounter(Generic[T]):
         return self._data != other._data
 
     def __hash__(self) -> int:
-        return hash(tuple(self._data.items()))
+        return self._hash
 
     def __add__(self, other: 'frozenCounter') -> 'frozenCounter':
         return frozenCounter({item: self[item] + other[item]
